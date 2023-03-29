@@ -1,6 +1,7 @@
 from assets.vector import VectorCalculation, VectorForm
 from assets.body import Body
 from assets.simulation import Simulation
+from time import perf_counter
 
 def earthMoon(dt):
     #Body(name, mass, position vector, velocity, acceleration)
@@ -37,10 +38,13 @@ def _3dbody(dt):
     
 
 def main():
+    start = perf_counter()
     dt = 86400
     #earthMoon(dt)
     sunEarthMoon(dt)
     #_3dbody(0.05)
+    end = perf_counter()
+    print(f"time: {end-start}")
 
 
 if __name__ == "__main__":

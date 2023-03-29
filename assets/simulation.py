@@ -61,8 +61,8 @@ class Simulation():
 
     def run(self):
         #mode = "leapfrogDKD"
-        noIterationPerFrame = 1
-        for i in range(50):  
+        noIterationPerFrame = 5
+        for i in range(400):  
             #update t
             self.__t += self.__dt
             

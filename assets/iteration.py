@@ -4,12 +4,27 @@ from assets.vector import VectorCalculation, VectorForm
 class Iteration():
     
     def __init__(self, dt: int, G: int, bodies:list[Body]):
+        """init an interation
+
+        Args:
+            dt (int): time step / delta t
+            G (int): universal gravitational constant
+            bodies (list[Body]): a list of bodies
+        """
         self.__dt = dt
-        self.__G = G #universal gravitational constant
+        self.__G = G
         self.__bodies = bodies
     
-    #get acceleration
     def __acc(self, body: Body, bodyx: VectorForm = None) -> VectorForm:
+        """get acceleration
+
+        Args:
+            body (Body): body to be calculated the acceleration
+            bodyx (VectorForm, optional): position vector of body. Defaults to the latest position.
+
+        Returns:
+            VectorForm: new acceleration 
+        """
         if bodyx is None:
             bodyx = body.x
         acc = []
@@ -23,6 +38,15 @@ class Iteration():
 
     #leapfrogDKD method
     def leapfrogDKD(self, currentT, body: Body) -> tuple:
+        """leapfrog drift-kick-drift method
+
+        Args:
+            currentT (_type_): current time (just for logging)
+            body (Body): the body that will be moved
+
+        Returns:
+            tuple: new x, v, a (position vector, velocity and acceleration)
+        """
         oldX = body.x
         oldV = body.v
         oldA = body.a
