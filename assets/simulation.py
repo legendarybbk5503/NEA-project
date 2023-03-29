@@ -2,6 +2,8 @@ from assets.vector import VectorForm, VectorCalculation
 from assets.body import Body
 from assets.iteration import Iteration
 import matplotlib.pyplot as plt
+from time import perf_counter
+
 
 class Simulation():
     
@@ -20,8 +22,6 @@ class Simulation():
         self.__ax.set_facecolor('black')
         self.__ax.set_aspect("equal", "box")
         
-        self.__bodyNo = 0
-
     def __update(self):
         #loop all body in bodies
         init = Iteration(self.__dt, self.__G, self.__bodies)
@@ -32,7 +32,7 @@ class Simulation():
             body.xva(x, v, a, self.__t)
             
             #pause for each frame
-            plt.pause(0.01)
+            #plt.pause(0.01)
 
     #plot a new circle and line
     def __plotNew(self):
@@ -59,21 +59,37 @@ class Simulation():
         #auto scale size
         self.__ax.autoscale()
 
-    def run(self):
+    def run(self, noIterationPerFrame = 1, maxBodyNo = -1):
+        start = perf_counter()
         #mode = "leapfrogDKD"
-        noIterationPerFrame = 5
-        for i in range(400):  
+        bodyNo = 0
+        
+        for i in range(50):  
             #update t
             self.__t += self.__dt
             
-            #print the bodies every n iterations
-            if i % noIterationPerFrame == 0:
-                self.__plotNew()
-                self.__bodyNo += 1
+            #plot new points            
+            self.__plotNew()
+            bodyNo += 1
+            
+            #remove if the trail is longer than required
+            '''if maxBodyNo >= 0:
+                while bodyNo > maxBodyNo:
+                    self.__ax.lines.pop(0)
+                    bodyNo -= 1'''
             
             #update new t, x, v, a
             self.__update()
+            
+            #show the graph every n frames
+            if i % noIterationPerFrame == 0:
+                #auto scale size
+                self.__ax.autoscale()
+                #pause for each frame
+                plt.pause(0.1)
                 
+        end = perf_counter()
+        print(f"time: {end-start}")
         plt.show()
 
 
