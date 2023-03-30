@@ -4,7 +4,6 @@ from assets.iteration import Iteration
 import matplotlib.pyplot as plt
 from time import perf_counter
 
-
 class Simulation():
     
     def __init__(self, dt, bodies: list[Body], Gvalue: float = None):
@@ -66,9 +65,10 @@ class Simulation():
     def __remove(self, maxBodyNo):
         if maxBodyNo >= 0:
             if self.__bodyCurrentNo > maxBodyNo:
-                lines = self.__ax.get_lines()[2:]
+                lines = self.__ax.get_lines()[:2]
                 for line in lines:
                     line.remove()
+                    #plt.pause(1)
                 self.__bodyCurrentNo -= 1    
     def run(self, noIterationPerFrame = 1, maxBodyNo = -1):
         start = perf_counter()
