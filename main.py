@@ -23,7 +23,7 @@ def sunEarthMoon(dt):
     moon.xva(VectorForm(149.1e9+384.4e6, 0), VectorForm(0, 30000), VectorForm(0, 0))
     
     model = Simulation(dt, [sun, earth, moon])
-    model.run()
+    model.run(1, 5)
     
 def _3dbody(dt):
     a = Body("a", 1, 0.05, "red")
@@ -33,7 +33,7 @@ def _3dbody(dt):
     b.xva(VectorForm(0.97000436, -0.24308753), VectorForm(0.466203685, 0.43236573), VectorForm(0, 0))
     c.xva(VectorForm(0, 0), VectorForm(-0.93240737, -0.86473146), VectorForm(0, 0))
     model = Simulation(dt, [a, b, c], 1)
-    model.run()
+    model.run(1, 5)
     
 
 def main():

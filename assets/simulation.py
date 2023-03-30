@@ -22,6 +22,9 @@ class Simulation():
         self.__ax.set_facecolor('black')
         self.__ax.set_aspect("equal", "box")
         
+        self.__bodyNo = len(bodies)
+        self.__bodyCurrentNo = 0
+        
     def __update(self):
         #loop all body in bodies
         init = Iteration(self.__dt, self.__G, self.__bodies)
@@ -31,8 +34,7 @@ class Simulation():
             x, v, a = init.leapfrogDKD(self.__t, body)
             body.xva(x, v, a, self.__t)
             
-            #pause for each frame
-            #plt.pause(0.01)
+
 
     #plot a new circle and line
     def __plotNew(self):
@@ -58,11 +60,19 @@ class Simulation():
             self.__ax.add_patch(c)
         #auto scale size
         self.__ax.autoscale()
-
+        #increase bodyNo by 1
+        self.__bodyCurrentNo += 1
+    
+    def __remove(self, maxBodyNo):
+        if maxBodyNo >= 0:
+            if self.__bodyCurrentNo > maxBodyNo:
+                lines = self.__ax.get_lines()[2:]
+                for line in lines:
+                    line.remove()
+                self.__bodyCurrentNo -= 1    
     def run(self, noIterationPerFrame = 1, maxBodyNo = -1):
         start = perf_counter()
         #mode = "leapfrogDKD"
-        bodyNo = 0
         
         for i in range(50):  
             #update t
@@ -70,13 +80,9 @@ class Simulation():
             
             #plot new points            
             self.__plotNew()
-            bodyNo += 1
             
-            #remove if the trail is longer than required
-            '''if maxBodyNo >= 0:
-                while bodyNo > maxBodyNo:
-                    self.__ax.lines.pop(0)
-                    bodyNo -= 1'''
+            #remove when its longer than maxBodyNo
+            self.__remove(maxBodyNo)
             
             #update new t, x, v, a
             self.__update()
