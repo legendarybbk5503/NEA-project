@@ -1,6 +1,7 @@
 from assets.vector import VectorForm, VectorCalculation
 from assets.body import Body
 from assets.iteration import Iteration
+from assets.database import DatabaseFormat, DatabaseDict
 import matplotlib.pyplot as plt
 from time import perf_counter
 
@@ -24,17 +25,28 @@ class Simulation():
         self.__bodyNo = len(bodies)
         self.__bodyCurrentNo = 0
         
+        self.__databaseDict = DatabaseDict()
+        
     def __update(self):
         #loop all body in bodies
         init = Iteration(self.__dt, self.__G, self.__bodies)
         for body in self.__bodies:
-            
+            #get data from database
+            bodydb = self.__databaseDict.db.get(body.name, None)
+            #create if not exist
+            if bodydb is None:
+                self.__databaseDict.db[body.name] = DatabaseFormat(
+                    body.name,
+                    body.mass,
+                    body.radius,
+                    body.color
+                )
+            #append new data into database
+            self.__databaseDict.db[body.name].appendxva(self.__t, body.x, body.v, body.a)
             #update xva of each body
             x, v, a = init.leapfrogDKD(self.__t, body)
             body.xva(x, v, a, self.__t)
             
-
-
     #plot a new circle and line
     def __plotNew(self):
         circle = []
@@ -63,18 +75,20 @@ class Simulation():
         self.__bodyCurrentNo += 1
     
     def __remove(self, maxBodyNo):
-        if maxBodyNo >= 0:
-            if self.__bodyCurrentNo > maxBodyNo:
-                lines = self.__ax.get_lines()[:2]
-                for line in lines:
-                    line.remove()
-                    #plt.pause(1)
-                self.__bodyCurrentNo -= 1    
+        if maxBodyNo >= 0 and self.__bodyCurrentNo > maxBodyNo:
+            lines = self.__ax.get_lines()[:self.__bodyNo]
+            for line in lines:
+                line.remove()
+            circles = self.__ax.patches[:self.__bodyNo]
+            for circle in circles:
+                circle.remove()
+            self.__bodyCurrentNo -= 1
+                
     def run(self, noIterationPerFrame = 1, maxBodyNo = -1):
         start = perf_counter()
         #mode = "leapfrogDKD"
         
-        for i in range(50):  
+        for i in range(100):  
             #update t
             self.__t += self.__dt
             
@@ -84,7 +98,8 @@ class Simulation():
             #remove when its longer than maxBodyNo
             self.__remove(maxBodyNo)
             
-            #update new t, x, v, a
+            #save the previous data into database
+            #and update new t, x, v, a
             self.__update()
             
             #show the graph every n frames
@@ -96,6 +111,9 @@ class Simulation():
                 
         end = perf_counter()
         print(f"time: {end-start}")
+        
+        self.__databaseDict.print()
+        
         plt.show()
 
 
