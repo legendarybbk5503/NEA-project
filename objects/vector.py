@@ -1,5 +1,3 @@
-import math
-
 class VectorForm():
     """A math vector form, with multiple values
     """
@@ -81,7 +79,7 @@ class VectorCalculation():
             float: norm of the vector
         """
         a = a.print()
-        return math.sqrt(sum(i**2 for i in a)) 
+        return (sum(i**2 for i in a)) ** 0.5
     
     def scalarProduct(self, vector: VectorForm, scalar: float) -> VectorForm:
         """Scalar Prodcut k(a)
@@ -96,18 +94,7 @@ class VectorCalculation():
         return VectorForm(*[i*scalar for i in vector.print()])
     
 def main():
-    x = VectorForm(3, 4)
-    y = VectorForm(1, 2)
-    acc = [x]
-    print(acc)
-    print(VectorCalculation().sum(*acc).print())
-    
-    x = VectorForm
-    acc = [x]
-    print(acc)
-    x = VectorCalculation.sum(*acc)
-    print(x.print())
-    return VectorCalculation.sum(*acc)
+    pass
     
 if __name__ == "__main__":
     main()

@@ -1,29 +1,22 @@
-from assets.body import Body
-from assets.vector import VectorCalculation, VectorForm
+from objects.body import Body
+from objects.vector import VectorCalculation, VectorForm as Vec
 
 class Iteration():
     
-    def __init__(self, dt: int, G: int, bodies:list[Body]):
-        """init an interation
-
-        Args:
-            dt (int): time step / delta t
-            G (int): universal gravitational constant
-            bodies (list[Body]): a list of bodies
-        """
-        self.__dt = dt
-        self.__G = G
+    def __init__(self, bodies:list[Body], **kwargs):
         self.__bodies = bodies
+        self.__dt = kwargs.get("dt", 86400) #default: a day
+        self.__G = kwargs.get('G', 6.67e-11)
     
-    def __acc(self, body: Body, bodyx: VectorForm = None) -> VectorForm:
+    def __acc(self, body: Body, bodyx: Vec = None) -> Vec:
         """get acceleration
 
         Args:
             body (Body): body to be calculated the acceleration
-            bodyx (VectorForm, optional): position vector of body. Defaults to the latest position.
+            bodyx (Vec, optional): position vector of body. Defaults to the latest position.
 
         Returns:
-            VectorForm: new acceleration 
+            Vec: new acceleration 
         """
         if bodyx is None:
             bodyx = body.x
@@ -37,11 +30,10 @@ class Iteration():
         return VectorCalculation().sum(*acc)
 
     #leapfrogDKD method
-    def leapfrogDKD(self, currentT, body: Body) -> tuple:
+    def leapfrogDKD(self, body: Body) -> tuple:
         """leapfrog drift-kick-drift method
 
         Args:
-            currentT (_type_): current time (just for logging)
             body (Body): the body that will be moved
 
         Returns:
@@ -52,8 +44,8 @@ class Iteration():
         oldA = body.a
         dt   = self.__dt
         
-        print("\nleapfrogDKD", currentT//dt, currentT, body.name)
-        print(body.x.print())
+        #print("\nleapfrogDKD", currentT//dt, currentT, body.name)
+        #print(body.x.print())
         
         vt = VectorCalculation().scalarProduct(oldV, dt/2)
         halfX = VectorCalculation().sum(oldX, vt)
