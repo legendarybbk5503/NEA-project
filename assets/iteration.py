@@ -44,9 +44,6 @@ class Iteration():
         oldA = body.a
         dt   = self.__dt
         
-        #print("\nleapfrogDKD", currentT//dt, currentT, body.name)
-        #print(body.x.print())
-        
         vt = VectorCalculation().scalarProduct(oldV, dt/2)
         halfX = VectorCalculation().sum(oldX, vt)
         

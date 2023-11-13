@@ -2,6 +2,9 @@ import pygame
 import sys
 from objects.button import Button_init, Textbox_init
 from assets.simulation import Builtin_Simulation
+from assets.statistics import Statistics
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+
 
 class GUI():
     def __init__(self):
@@ -17,6 +20,8 @@ class GUI():
         self.__textboxes = Textbox_init(self.__width, self.__height)
 
         self.__circle_radius = 7
+        
+        self.__previous_vars = {}
 
         clock = pygame.time.Clock()
         clock.tick(60)
@@ -74,6 +79,9 @@ class GUI():
         return center
 
     def __draw(self, db, iterationNo):
+        self.__previous_vars["db"] = db
+        self.__previous_vars["iterationNo"] = iterationNo
+
         self.__screen.fill((0, 0, 0)) #black
         pygame.display.flip()
 
@@ -84,6 +92,7 @@ class GUI():
         for i in range(iterationNo):
             self.__clear()
             self.__buttons.home_button.draw(self.__screen)
+            self.__buttons.back_button.draw(self.__screen)
             self.__buttons.play_again.draw(self.__screen)
             self.__buttons.statistics.draw(self.__screen)
 
@@ -115,10 +124,13 @@ class GUI():
                     self.__exit()
                 elif self.__isHome(event):
                     self.__home()
+                elif self.__isBack(event):
+                    simulation_choice = self.__previous_vars["simulation_choice"]
+                    self.__simulation_run(simulation_choice)
                 elif self.__isPlay_again(event):
                     self.__draw(db, iterationNo)
                 elif self.__isStatistics(event):
-                    self.__statistics(db, iterationNo)
+                    self.__statistics(db)
         
         while True:
             for event in pygame.event.get():
@@ -126,15 +138,19 @@ class GUI():
                     self.__exit()
                 elif self.__isHome(event):
                     self.__home()
+                elif self.__isBack(event):
+                    simulation_choice = self.__previous_vars["simulation_choice"]
+                    self.__simulation_run(simulation_choice)
                 elif self.__isPlay_again(event):
                     self.__draw(db, iterationNo)
                 elif self.__isStatistics(event):
                     self.__statistics(db, iterationNo)
         
-    def __statistics(self, db, iterationNo):
+    def __statistics(self, db):
         self.__clear()
 
         self.__buttons.home_button.draw(self.__screen)
+        self.__buttons.back_button.draw(self.__screen)
         l = len(db.db)
         if l == 2:
             [button.draw(self.__screen) for button in self.__buttons.statistics_earthmoon]
@@ -142,24 +158,36 @@ class GUI():
             [button.draw(self.__screen) for button in self.__buttons.statistics_solar[:l]]
 
         pygame.display.flip()
-#test
+
         while True:
             for event in pygame.event.get():
                 if self.__isExit(event):
                     self.__exit()
                 elif self.__isHome(event):
                     self.__home()
+                elif self.__isBack(event):
+                    iterationNo = self.__previous_vars["iterationNo"]
+                    self.__draw(db, iterationNo)
                 else:
                     if l == 2:
-                        choice = self.__isStatistics_earthmoon(event) #choose object
+                        choice = self.__isStatistics_earthmoon(event) #choose body
                     else:
                         choice = self.__isStatistics_solar(event, l)
-                    if choice is not False: #False then nothing will happen
-                        self.__statistics_setting(choice, db, iterationNo, l)
 
-    def __statistics_setting(self, object, db, iterationNo, l):
+                    if choice is not False: #False then nothing will happen
+                        if l == 2:
+                            name = ["earth", "moon"][choice]
+                        else:
+                            lst = ["sun", "mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto"]
+                            name = lst[choice]
+                        self.__statistics_setting(name)
+
+    def __statistics_setting(self, name):
+        self.__previous_vars["name"] = name
+
         self.__clear()
         self.__buttons.home_button.draw(self.__screen)
+        self.__buttons.back_button.draw(self.__screen)
         [button.draw(self.__screen) for button in self.__buttons.statistics_mode]
 
         pygame.display.flip()
@@ -170,20 +198,28 @@ class GUI():
                     self.__exit()
                 elif self.__isHome(event):
                     self.__home()
+                elif self.__isBack(event):
+                    db = self.__previous_vars["db"]
+                    self.__statistics(db)
                 else:
                     choice = self.__isMode(event)
                     if choice is not False: #False then nothing will happen
                         if choice == 4: #energy
-                            self.__statistics_energy()
+                            self.__statistics_energy(name)
                         else: 
                             if choice == 0: #displacement
-                                displacement_mode = self.__statistics_displacemet()
+                                displacement_mode = self.__statistics_displacement()
+                            else:
+                                displacement_mode = None
                             #0: displacement, 1: velocity, 2: acceleration, 3: force
-                            self.__statistics_general(choice, displacement_mode)
+                            self.__statistics_general(name, choice, displacement_mode)
 
-    def __statistics_energy(self):
+    def __statistics_energy(self, name):
+        self.__previous_vars["data_choice"] = 4
+
         self.__clear()
         self.__buttons.home_button.draw(self.__screen)
+        self.__buttons.back_button.draw(self.__screen)
         [button.draw(self.__screen) for button in self.__buttons.statistics_energy]
 
         pygame.display.flip()
@@ -194,15 +230,18 @@ class GUI():
                     self.__exit()
                 elif self.__isHome(event):
                     self.__home()
+                elif self.__isBack(event):
+                    self.__statistics_setting(name)
                 else:
                     choice = self.__isEnergy(event)
                     if choice is not False: #False then nothing will happen
-                        pass #StatsEnergy(data_choice, KE/PE/total)
-#------------------------------------tbc-----------------------------------------
+                        fig, ax, = self.__stats.energy(name, choice, self.__G)
+                        self.__embed_graph(fig, ax)
 
-    def __statistics_displacemet(self):
+    def __statistics_displacement(self):
         self.__clear()
         self.__buttons.home_button.draw(self.__screen)
+        self.__buttons.back_button.draw(self.__screen)
         [button.draw(self.__screen) for button in self.__buttons.statistics_displacement]
 
         pygame.display.flip()
@@ -213,14 +252,21 @@ class GUI():
                     self.__exit()
                 elif self.__isHome(event):
                     self.__home()
+                elif self.__isBack(event):
+                    db = self.__previous_vars["db"]
+                    self.__statistics(db)
                 else:
                     choice = self.__isDisplacement(event)
                     if choice is not False:
                         return choice #displacement mode
 
-    def __statistics_general(self, data_choice, displacement_mode = -1):
+    def __statistics_general(self, name, data_choice, displacement_mode):
+        self.__previous_vars["data_choice"] = data_choice
+        self.__previous_vars["displacement_mode"] = displacement_mode
+
         self.__clear()
         self.__buttons.home_button.draw(self.__screen)
+        self.__buttons.back_button.draw(self.__screen)
         [button.draw(self.__screen) for button in self.__buttons.statistics_general]
 
         pygame.display.flip()
@@ -231,12 +277,49 @@ class GUI():
                     self.__exit()
                 elif self.__isHome(event):
                     self.__home()
+                elif self.__isBack(event):
+                    if displacement_mode is None:
+                        self.__statistics_setting(name)
+                    else:
+                        displacement_mode = self.__statistics_displacement()
+                        self.__statistics_setting(name)
                 else:
                     choice = self.__isGeneral(event)
                     if choice is not False:
-                        pass #Stats(data_choice, x/y/magnitude, displacement_mode)
+                        fig, ax = self.__stats.general(name, data_choice, choice, displacement_mode)
+                        self.__embed_graph(fig, ax)
 #------------------------------------tbc-----------------------------------------
+    def __embed_graph(self, fig, ax):
+        self.__clear()
+        self.__buttons.home_button.draw(self.__screen)
+        self.__buttons.back_button.draw(self.__screen)
 
+        canvas = FigureCanvasAgg(fig)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+        size = canvas.get_width_height()
+        image_surface = pygame.image.fromstring(raw_data, size, "RGB")
+        image_surface = pygame.transform.scale(image_surface, (750, 750))
+        self.__screen.blit(image_surface, (125, 125))
+
+        pygame.display.flip()
+
+        while True:
+            for event in pygame.event.get():
+                if self.__isExit(event):
+                    self.__exit()
+                elif self.__isHome(event):
+                    self.__home()
+                elif self.__isBack(event):
+                    name = self.__previous_vars["name"]
+                    if self.__previous_vars["data_choice"] == "energy":
+                        self.__statistics_energy(name)
+                    else:
+                        data_choice = self.__previous_vars["data_choice"]
+                        displacement_mode = self.__previous_vars["displacement_mode"]
+                        self.__statistics_general(name, data_choice, displacement_mode)
+                    
 
 
     def __clear(self):
@@ -259,6 +342,11 @@ class GUI():
 
     def __isHome(self, event):
         button = self.__buttons.home_button
+        button.isHover(self.__screen)
+        return button.isCollide(event)
+
+    def __isBack(self, event):
+        button = self.__buttons.back_button
         button.isHover(self.__screen)
         return button.isCollide(event)
 
@@ -345,29 +433,31 @@ class GUI():
                     values.append(int(value))
         return values
 
-    def __draw_setting(self, choice):
+    def __draw_setting(self, simulation_choice):
         self.__clear()
         
         for textbox in self.__textboxes.simulation_setting_textboxes:
             textbox.draw(self.__screen)
         
-        if choice == 0:
-            for button in self.__buttons.simulation_setting_earthmoon_default_buttons:
-                button.draw(self.__screen)
-        elif choice == 1:
-            for button in self.__buttons.simulation_setting_inner_solar_default_buttons:
-                button.draw(self.__screen)
-        elif choice == 2:
-            for button in self.__buttons.simulation_setting_middle_solar_default_buttons:
-                button.draw(self.__screen)
-        elif choice == 3:
-            for button in self.__buttons.simulation_setting_outer_solar_default_buttons:
-                button.draw(self.__screen)
+        match simulation_choice:
+            case 0:
+                for button in self.__buttons.simulation_setting_earthmoon_default_buttons:
+                    button.draw(self.__screen)
+            case 1:
+                for button in self.__buttons.simulation_setting_inner_solar_default_buttons:
+                    button.draw(self.__screen)
+            case 2:
+                for button in self.__buttons.simulation_setting_middle_solar_default_buttons:
+                    button.draw(self.__screen)
+            case 3:
+                for button in self.__buttons.simulation_setting_outer_solar_default_buttons:
+                    button.draw(self.__screen)
 
         self.__buttons.simulation_setting_guide1.draw(self.__screen)
         self.__buttons.simulation_setting_guide2.draw(self.__screen)
         self.__buttons.simulation_setting_enter.draw(self.__screen)
         self.__buttons.home_button.draw(self.__screen)
+        self.__buttons.back_button.draw(self.__screen)
         pygame.display.flip()
 
         typing = [False] * 3
@@ -376,17 +466,20 @@ class GUI():
                 #check buttons
                 if self.__isExit(event):
                     self.__exit()
+                elif self.__isHome(event):
+                    self.__home()
+                elif self.__isBack(event):
+                    self.__start()
                 elif self.__isEnter(event):
                     try:
-                        value = self.__enter(choice)
+                        value = self.__enter(simulation_choice)
                     except:
                         button = self.__buttons.simulation_setting_enter_error
                         button.draw(self.__screen)
                         pygame.display.flip()
                     else:
                         return value
-                elif self.__isHome(event):
-                    self.__home()
+
 
                 #check textboxes
                 for i, textbox in enumerate(self.__textboxes.simulation_setting_textboxes):
@@ -406,24 +499,22 @@ class GUI():
                             pygame.display.update(textbox._rect)
             pygame.time.delay(10)
 
-    def __simulation_run(self, choice):
+    def __simulation_run(self, simulation_choice):
+        self.__previous_vars["simulation_choice"] = simulation_choice
+
         self.__clear()
-        values = self.__draw_setting(choice)
-        match choice:
+        values = self.__draw_setting(simulation_choice)
+        match simulation_choice:
             case 0: model = Builtin_Simulation().earth_moon(*values)
             case 1: model = Builtin_Simulation().inner_solar_system(*values)
             case 2: model = Builtin_Simulation().middle_solar_system(*values)
             case 3: model = Builtin_Simulation().outer_solar_system(*values)
+        self.__G = values[0]
         db = model.load()
         
+        self.__stats = Statistics(db.db)
         self.__draw(db, values[2])
 
-        while True:
-            for event in pygame.event.get():
-                if self.__isExit(event):
-                    self.__exit()
-                elif self.__isHome(event):
-                    self.__home()
 
     def __home(self):
         self.__clear()
@@ -434,19 +525,25 @@ class GUI():
         for button in self.__buttons.simulation_selection_buttons:
             button.draw(self.__screen)
         self.__buttons.home_button.draw(self.__screen)
+        self.__buttons.back_button.draw(self.__screen)
         pygame.display.flip()
+
         while True:
             for event in pygame.event.get():
                 if self.__isExit(event):
                     self.__exit()
-                choice = self.__isSimulation_select(event)
-                if choice is not False:
-                    self.__simulation_run(choice)
                 elif self.__isHome(event):
                     self.__home()
+                elif self.__isBack(event):
+                    self.run()
+                simulation_choice = self.__isSimulation_select(event)
+                if simulation_choice is not False:
+                    self.__simulation_run(simulation_choice)
+
             pygame.time.delay(10)        
 
     def run(self):
+        self.__clear()
         self.__buttons.start_button.draw(self.__screen)
         pygame.display.flip()
         while True:

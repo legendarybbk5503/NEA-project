@@ -26,7 +26,7 @@ class Body():
         self.olda = None
         self.oldt = None
 
-    def xva(self, x: Vec, v: Vec, a: Vec = 0):
+    def xva(self, x: Vec, v: Vec, a: Vec = Vec(0, 0)):
         """append xva data
 
         Args:

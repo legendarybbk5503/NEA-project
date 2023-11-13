@@ -3,8 +3,7 @@ from objects.body import Body
 
 class DatabaseFormat():
     
-    def __init__(self, name: str, mass: float, color: str, x:Vec, v: Vec, a: Vec):
-        self.name = name
+    def __init__(self, mass: float, color: str, x:Vec, v: Vec, a: Vec):
         self.mass = mass
         self.color = color
         self.t = [0]
@@ -19,7 +18,6 @@ class DatabaseFormat():
         self.a.append(a)
     
     def print(self):
-        print(f"name = {self.name}")
         print(f"mass = {self.mass}")
         print(f"color = {self.color}")
         for i in range(len(self.t)):
@@ -31,7 +29,6 @@ class DatabaseFormat():
 class DatabaseDict():
     def __init__(self, bodies: list[Body]):
         self.db = {body.name: DatabaseFormat(
-            body.name,
             body.mass,
             body.color,
             body.x,

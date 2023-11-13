@@ -56,6 +56,32 @@ class Button_init():
             "red"
         )
     
+    def __home_button(self):
+        button_width = 100
+        button_height = 50
+        return Button(
+            self.__width - button_width,
+            0,
+            button_width,
+            button_height,
+            "white",
+            "Home",
+            "red"
+        )
+    
+    def __back_button(self):
+        button_width = 100
+        button_height = 50
+        return Button(
+            0,
+            0,
+            button_width,
+            button_height,
+            "white",
+            "Back",
+            "red"
+        )
+
     def __simulation__selection_buttons(self):
         button_width = 230
         button_height = 75
@@ -80,19 +106,6 @@ class Button_init():
             )
         for x, text in zip(x_list, texts)
         ]
-
-    def __home_button(self):
-        button_width = 100
-        button_height = 50
-        return Button(
-            self.__width - button_width,
-            0,
-            button_width,
-            button_height,
-            "white",
-            "Home",
-            "red"
-        )
 
     def __simulation_setting_earthmoon_default_buttons(self):
         button_width = 350
@@ -225,7 +238,7 @@ class Button_init():
         button_width = 300
         button_height = 50
         return Button(
-            0,
+            self.__center_x - button_width // 2,
             0,
             button_width,
             button_height,
@@ -390,6 +403,7 @@ class Button_init():
         self.start_button = self.__start_button()
         self.simulation_selection_buttons = self.__simulation__selection_buttons()
         self.home_button = self.__home_button()
+        self.back_button = self.__back_button()
         self.simulation_setting_earthmoon_default_buttons = self.__simulation_setting_earthmoon_default_buttons()
         self.simulation_setting_inner_solar_default_buttons = self.__simulation_setting_inner_solar_default_buttons()
         self.simulation_setting_middle_solar_default_buttons = self.__simulation_setting_middle_solar_default_buttons()
