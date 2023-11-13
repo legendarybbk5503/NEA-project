@@ -142,7 +142,7 @@ class GUI():
             [button.draw(self.__screen) for button in self.__buttons.statistics_solar[:l]]
 
         pygame.display.flip()
-
+#test
         while True:
             for event in pygame.event.get():
                 if self.__isExit(event):
