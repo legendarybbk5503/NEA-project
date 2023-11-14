@@ -1,13 +1,18 @@
 import pygame
 import sys
 from objects.button import Button_init, Textbox_init
+from objects.database import DatabaseFormat, DatabaseDict
 from assets.simulation import Builtin_Simulation
 from assets.statistics import Statistics
 from matplotlib.backends.backend_agg import FigureCanvasAgg
+import matplotlib
 
 
 class GUI():
     def __init__(self):
+        """Create a GUI object for pygame
+        """
+
         pygame.init()
         self.__width, self.__height = 1000, 1000
         self.__screen = pygame.display.set_mode((self.__width, self.__height))
@@ -26,7 +31,17 @@ class GUI():
         clock = pygame.time.Clock()
         clock.tick(60)
 
-    def __scaling(self, db):
+    def __scaling(self, db: DatabaseDict) -> tuple[float, float, float]:
+        """Get the scale factor for the simulation 
+        when converting real life coordinate into pygame pixels coordinate
+
+        Args:
+            db (DatabaseDict): database
+
+        Returns:
+            tuple[float, float, float]: scale_factor, min_x, min_y (for scaling each coordinate)
+        """
+
         temp = [data.x for data in db.db.values()]
         coordinates = []
         [coordinates.extend(lst) for lst in temp]
@@ -45,12 +60,34 @@ class GUI():
         scale_factor = min(sf_x, sf_y)
         return scale_factor, min_x, min_y
 
-    def __scaled_coor(self, x, y, min_x, min_y, scale_factor):
+    def __scaled_coor(self, x: float, y: float, min_x: float, min_y: float, scale_factor: float) -> tuple[int, int]:
+        """Convert original coordinate into pygame coordinate
+
+        Args:
+            x (float): original x coordinate
+            y (float): original y coordinate
+            min_x (float): minimum x in all data
+            min_y (float): minimum y in all data
+            scale_factor (float): scale factor for scaling
+
+        Returns:
+            tuple[int, int]: x, y in pygame coordinate
+        """
+
         scaled_x = int(((x - min_x) * scale_factor)) + 50
         scaled_y = int(((y - min_y) * scale_factor)) + 50
         return scaled_x, scaled_y
 
-    def __format_time(self, seconds):
+    def __format_time(self, seconds: float) -> str:
+        """Convert time in seconds into human readable approximate form
+
+        Args:
+            seconds (float): time in seconds
+
+        Returns:
+            str: human readable approximate form of time
+        """
+
         years = seconds // (365 * 24 * 3600)
         days = (seconds // (24 * 3600)) % 365
         hours = (seconds // 3600) % 24
@@ -71,14 +108,35 @@ class GUI():
             else: return f"{minutes} mins"
         else: return f"{remaining_seconds} s"
 
-    def __draw_circle(self, data, i, min_x, min_y, scale_factor):
+    def __draw_circle(self, data: DatabaseFormat, i: int, min_x: float, min_y: float, scale_factor: float) -> tuple[int, int]:
+        """Draw the circles of the object
+
+        Args:
+            data (DatabaseFormat): database of the object
+            i (int): index
+            min_x (float): minimum x for scaling
+            min_y (float): minimum y for scaling
+            scale_factor (float): scale factor for scaling into pygame coordinate
+
+        Returns:
+            tuple[int, int]: center(x, y)
+        """
+
         color = data.color
         x, y = data.x[i].printx(), data.x[i].printy()
         center = self.__scaled_coor(x, y, min_x, min_y, scale_factor)
         pygame.draw.circle(self.__screen, color, center, self.__circle_radius)
         return center
 
-    def __draw(self, db, iterationNo):
+    def __draw(self, db: DatabaseDict, iterationNo: int):
+        """Create the drawing screen and draw the simulation on the screen
+        with the choice of play again and statistics
+
+        Args:
+            db (DatabaseDict): database
+            iterationNo (int): number of iterations
+        """
+
         self.__previous_vars["db"] = db
         self.__previous_vars["iterationNo"] = iterationNo
 
@@ -146,7 +204,13 @@ class GUI():
                 elif self.__isStatistics(event):
                     self.__statistics(db, iterationNo)
         
-    def __statistics(self, db):
+    def __statistics(self, db: DatabaseDict):
+        """Create the statistics screen and let user pick between different statistics
+
+        Args:
+            db (DatabaseDict): database
+        """
+
         self.__clear()
 
         self.__buttons.home_button.draw(self.__screen)
@@ -182,7 +246,13 @@ class GUI():
                             name = lst[choice]
                         self.__statistics_setting(name)
 
-    def __statistics_setting(self, name):
+    def __statistics_setting(self, name: str):
+        """Let the user pick between displacement, velocity, acceleration, force and energy
+        
+        Args:
+            name (str): name of the object
+        """
+
         self.__previous_vars["name"] = name
 
         self.__clear()
@@ -214,7 +284,13 @@ class GUI():
                             #0: displacement, 1: velocity, 2: acceleration, 3: force
                             self.__statistics_general(name, choice, displacement_mode)
 
-    def __statistics_energy(self, name):
+    def __statistics_energy(self, name: str):
+        """Let the user pick bewteen energies
+
+        Args:
+            name (str): name of the object
+        """
+
         self.__previous_vars["data_choice"] = 4
 
         self.__clear()
@@ -238,7 +314,13 @@ class GUI():
                         fig, ax, = self.__stats.energy(name, choice, self.__G)
                         self.__embed_graph(fig, ax)
 
-    def __statistics_displacement(self):
+    def __statistics_displacement(self) -> int:
+        """Let the user pick between displacement mode
+
+        Returns:
+            int: index of the modes
+        """
+
         self.__clear()
         self.__buttons.home_button.draw(self.__screen)
         self.__buttons.back_button.draw(self.__screen)
@@ -253,17 +335,24 @@ class GUI():
                 elif self.__isHome(event):
                     self.__home()
                 elif self.__isBack(event):
-                    db = self.__previous_vars["db"]
-                    self.__statistics(db)
+                    name = self.__previous_vars["name"]
+                    self.__statistics_setting(name)
                 else:
                     choice = self.__isDisplacement(event)
                     if choice is not False:
+                        self.__previous_vars["displacement_mode"] = choice
                         return choice #displacement mode
 
-    def __statistics_general(self, name, data_choice, displacement_mode):
-        self.__previous_vars["data_choice"] = data_choice
-        self.__previous_vars["displacement_mode"] = displacement_mode
+    def __statistics_general(self, name: str, data_choice: int, displacement_mode: int):
+        """Let the user choose between x, y and magnitude
 
+        Args:
+            name (str): name of the objects
+            data_choice (int): which type of data
+            displacement_mode (int): if its displacement, which type of displacement
+        """
+        
+        self.__previous_vars["data_choice"] = data_choice
         self.__clear()
         self.__buttons.home_button.draw(self.__screen)
         self.__buttons.back_button.draw(self.__screen)
@@ -278,18 +367,25 @@ class GUI():
                 elif self.__isHome(event):
                     self.__home()
                 elif self.__isBack(event):
-                    if displacement_mode is None:
-                        self.__statistics_setting(name)
-                    else:
+                    if displacement_mode is not None:
                         displacement_mode = self.__statistics_displacement()
+                        self.__statistics_general(name, data_choice, displacement_mode)
+                    else:
                         self.__statistics_setting(name)
                 else:
                     choice = self.__isGeneral(event)
                     if choice is not False:
                         fig, ax = self.__stats.general(name, data_choice, choice, displacement_mode)
                         self.__embed_graph(fig, ax)
-#------------------------------------tbc-----------------------------------------
-    def __embed_graph(self, fig, ax):
+
+    def __embed_graph(self, fig: matplotlib.figure , ax: matplotlib.axes.Axes):
+        """Plot the graph add it to pygame screen
+
+        Args:
+            fig (matplotlib.figure): matplotlib figure
+            ax (matplotlib.axes.Axes): matplotlib axes
+        """
+
         self.__clear()
         self.__buttons.home_button.draw(self.__screen)
         self.__buttons.back_button.draw(self.__screen)
@@ -313,94 +409,224 @@ class GUI():
                     self.__home()
                 elif self.__isBack(event):
                     name = self.__previous_vars["name"]
-                    if self.__previous_vars["data_choice"] == "energy":
+                    data_choice = self.__previous_vars["data_choice"]
+                    if data_choice == 4:
                         self.__statistics_energy(name)
                     else:
-                        data_choice = self.__previous_vars["data_choice"]
                         displacement_mode = self.__previous_vars["displacement_mode"]
                         self.__statistics_general(name, data_choice, displacement_mode)
                     
 
 
     def __clear(self):
+        """Clear pygame screen
+        """
+
         self.__screen.fill((0, 0, 0)) #black
 
-    def __isExit(self, event):
+    def __isExit(self, event: pygame.event) -> bool:
+        """Check if the exit button is clicked
+
+        Args:
+            event (_type_): pygame event
+
+        Returns:
+            bool: True if the exit button is clicked else False
+        """
+        
         return event.type == pygame.QUIT
 
-    def __isStart(self, event):
+    def __isStart(self, event: pygame.event) -> bool:
+        """Check if the start button is clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            bool: True if the start button is clicked else False
+        """
+
         button = self.__buttons.start_button
         button.isHover(self.__screen)
         return button.isCollide(event)
 
-    def __isSimulation_select(self, event):
+    def __isSimulation_select(self, event: pygame.event) -> int | bool:
+        """Check if the simulation selection buttons are clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            int | bool: index of the buttons if they are clicked else False
+        """
+
         for i, button in enumerate(self.__buttons.simulation_selection_buttons):
             button.isHover(self.__screen)
             if button.isCollide(event):
                 return i
         return False
 
-    def __isHome(self, event):
+    def __isHome(self, event: pygame.event) -> bool:
+        """Check if the home button is clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            bool: True if the home button is clicked else False
+        """
+
         button = self.__buttons.home_button
         button.isHover(self.__screen)
         return button.isCollide(event)
 
-    def __isBack(self, event):
+    def __isBack(self, event: pygame.event) -> bool:
+        """Check if the back button is clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            bool: True if the back button is clicked else False
+        """
+
         button = self.__buttons.back_button
         button.isHover(self.__screen)
         return button.isCollide(event)
 
-    def __isEnter(self, event):
+    def __isEnter(self, event: pygame.event) -> bool:
+        """Check if the enter button is clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            bool: True if the enter button is clicked else False
+        """
+
         button = self.__buttons.simulation_setting_enter
         button.isHover(self.__screen)
         return button.isCollide(event)
 
-    def __isPlay_again(self, event):
+    def __isPlay_again(self, event: pygame.event) -> bool:
+        """Check if the back button is clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            bool: True if the back button is clicked
+        """
+
         button = self.__buttons.play_again
         button.isHover(self.__screen)
         return button.isCollide(event)
 
-    def __isStatistics(self, event):
+    def __isStatistics(self, event: pygame.event) -> bool:
+        """Check if the statistics button is clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            bool: True if the statistics button is clicked else False
+        """
+
         button = self.__buttons.statistics
         button.isHover(self.__screen)
         return button.isCollide(event)
 
-    def __isStatistics_earthmoon(self, event):
+    def __isStatistics_earthmoon(self, event: pygame.event) -> int | bool:
+        """Check if the earth or moon buttons are clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            int | bool: index of the object if it is clicked else False
+        """
+
         for i, button in enumerate(self.__buttons.statistics_earthmoon):
             button.isHover(self.__screen)
             if button.isCollide(event):
                 return i #0-1
         return False
 
-    def __isStatistics_solar(self, event, l):
+    def __isStatistics_solar(self, event: pygame.event, l: int) -> int | bool:
+        """Check if the objects buttons are clicked
+
+        Args:
+            event (pygame.event): pygame event
+            l (int): number of objects from the sun
+
+        Returns:
+            int | bool: index of the object if it is clicked else False
+        """
+
         for i, button in enumerate(self.__buttons.statistics_solar[:l]):
             button.isHover(self.__screen)
             if button.isCollide(event):
                 return i #0-10
         return False
     
-    def __isMode(self, event):
+    def __isMode(self, event: pygame.event) -> int | bool:
+        """Check if the statistics mode buttons are clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            int | bool: index of the mode if it is clicked else False
+        """
+
         for i, button in enumerate(self.__buttons.statistics_mode):
             button.isHover(self.__screen)
             if button.isCollide(event):
                 return i #0-5
         return False
     
-    def __isEnergy(self, event):
+    def __isEnergy(self, event: pygame.event) -> int | bool:
+        """Check if the differnet types of energies buttons are clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            int | bool: index of the energy if it is clicked else False
+        """
+
         for i, button in enumerate(self.__buttons.statistics_energy):
             button.isHover(self.__screen)
             if button.isCollide(event):
                 return i #0-2
         return False
 
-    def __isDisplacement(self, event):
+    def __isDisplacement(self, event: pygame.event) -> int | bool:
+        """Check if the different types of displacements buttons are clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            int | bool: index of the displacement if it is clicked else False
+        """
+
         for i, button in enumerate(self.__buttons.statistics_displacement):
             button.isHover(self.__screen)
             if button.isCollide(event):
                 return i #0-2
         return False
     
-    def __isGeneral(self, event):
+    def __isGeneral(self, event: pygame.event) -> int | bool:
+        """Check if the drection buttons are clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            int | bool: index of the direction if it is clicked else False
+        """
+
         for i, button in enumerate(self.__buttons.statistics_general):
             button.isHover(self.__screen)
             if button.isCollide(event):
@@ -408,10 +634,22 @@ class GUI():
         return False
 
     def __exit(self):
+        """Exit pygame
+        """
+
         pygame.quit()
         sys.exit()
 
-    def __enter(self, choice):
+    def __enter(self, choice: int) -> list[float, float, int]:
+        """Return the textbox values, if they are blank then default values
+
+        Args:
+            choice (int): choice of the simulation
+
+        Returns:
+            list[float, float, int]: setting values [G, dt, iterationNo]
+        """
+
         values = []
         default = [
             [6.67e-11, 3600, 720],
@@ -422,9 +660,6 @@ class GUI():
         for i, textbox in enumerate(self.__textboxes.simulation_setting_textboxes):
             value = textbox.value
             if value == "":
-                #choice 0: earth moon
-                #choice 1: inner solar system
-                #choice 2: outer solar system
                 values.append(default[choice][i])
             else:
                 if i in [0, 1]:
@@ -433,7 +668,16 @@ class GUI():
                     values.append(int(value))
         return values
 
-    def __draw_setting(self, simulation_choice):
+    def __draw_setting(self, simulation_choice: int) -> list[float, float, int]:
+        """Create the screen of drawing setting and return the values
+
+        Args:
+            simulation_choice (int): choice of the simulation
+
+        Returns:
+            list[float, float, int]: setting values [G, dt, iterationNo]
+        """
+
         self.__clear()
         
         for textbox in self.__textboxes.simulation_setting_textboxes:
@@ -499,7 +743,13 @@ class GUI():
                             pygame.display.update(textbox._rect)
             pygame.time.delay(10)
 
-    def __simulation_run(self, simulation_choice):
+    def __simulation_run(self, simulation_choice: int):
+        """Load and calculate the simulation with given values
+
+        Args:
+            simulation_choice (int): choice of the simulation
+        """
+
         self.__previous_vars["simulation_choice"] = simulation_choice
 
         self.__clear()
@@ -517,10 +767,16 @@ class GUI():
 
 
     def __home(self):
+        """Back to home screen
+        """
+
         self.__clear()
         self.run()
 
     def __start(self):
+        """Create the screen for user to select with simulation
+        """
+
         self.__clear()
         for button in self.__buttons.simulation_selection_buttons:
             button.draw(self.__screen)
@@ -543,6 +799,10 @@ class GUI():
             pygame.time.delay(10)        
 
     def run(self):
+        """Start the whole programme
+        And a start button
+        """
+        
         self.__clear()
         self.__buttons.start_button.draw(self.__screen)
         pygame.display.flip()

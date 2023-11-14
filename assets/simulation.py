@@ -7,6 +7,15 @@ from pygame import Color
 class Simulation():
     
     def __init__(self, bodies: list[Body], **kwargs):
+        """Initialising a simulation
+
+        Args:
+            bodies (list[Body]): a list of bodies
+        Kwargs:
+            G (float): gravitional constant (default: 6.67e-11)
+            dt (float): time step (default: 86400) 
+        """
+
         #list of bodies
         self.__bodies = bodies
         #universal gravitational constant
@@ -16,7 +25,13 @@ class Simulation():
         #number of iterations
         self.iterationNo = kwargs.get("iterationNo", 1000)
     
-    def load(self):
+    def load(self) -> DatabaseDict:
+        """Calculate the full data given initial values
+
+        Returns:
+            DatabaseDict: Full data of every objects
+        """
+
         db = DatabaseDict(self.__bodies)
         for i in range(self.iterationNo):
             init = Iteration(self.__bodies, dt = self.__dt, G = self.__G)
@@ -29,6 +44,9 @@ class Simulation():
 
 class Builtin_Simulation():
     def __init__(self):
+        """Initialising all objects for simulations
+        """
+        
         self.__sun_red = Color("#FF0000")
         self.__mercury_gray = Color("#B7B8B9")
         self.__venus_orange = Color("#FFC649")
@@ -63,7 +81,18 @@ class Builtin_Simulation():
         self.__neptune.xva(Vec(4515e9, 0), Vec(0, -5.4e3))
         self.__pluto.xva(Vec(5906.4e9, 0), Vec(0, -4.7e3))
 
-    def earth_moon(self, G, dt, iterationNo):
+    def earth_moon(self, G: float, dt: float, iterationNo: int) -> Simulation:
+        """Create a simulation of earth moon
+
+        Args:
+            G (float): gravitational constant
+            dt (float): time step
+            iterationNo (int): number of iterations
+
+        Returns:
+            Simulation: earth moon simulation
+        """
+
         earth = Body("earth", 5.97e24, self.__earth_blue)
         moon  = Body("moon", 7.35e22, self.__moon_yellow)
 
@@ -77,7 +106,18 @@ class Builtin_Simulation():
         model = Simulation(planets, G = G,dt = dt, iterationNo = iterationNo)
         return model
 
-    def inner_solar_system(self, G, dt, iterationNo):
+    def inner_solar_system(self, G: float, dt: float, iterationNo: int) -> Simulation:
+        """Create a simulation of inner solar system (up to Mars)
+
+        Args:
+            G (float): gravitational constant
+            dt (float): time step
+            iterationNo (int): number of iterations
+
+        Returns:
+            Simulation: inner solar system simulation
+        """
+        
         planets = [
             self.__sun,
             self.__mercury,
@@ -88,7 +128,18 @@ class Builtin_Simulation():
         model = Simulation(planets, G = G, dt = dt, iterationNo = iterationNo)
         return model
     
-    def middle_solar_system(self, G, dt, iterationNo):
+    def middle_solar_system(self, G: float, dt: float, iterationNo: int) -> Simulation:
+        """Create a simulation of middle solar system (up to Saturn)
+
+        Args:
+            G (float): gravitational constant
+            dt (float): time step
+            iterationNo (int): number of iterations
+
+        Returns:
+            Simulation: midde solar system simulation
+        """
+
         planets = [
             self.__sun,
             self.__mercury,
@@ -102,7 +153,18 @@ class Builtin_Simulation():
         return model
 
 
-    def outer_solar_system(self, G, dt, iterationNo):
+    def outer_solar_system(self, G: float, dt: float, iterationNo: int) -> Simulation:
+        """Create a simulation of outer solar system (up to Pluto)
+
+        Args:
+            G (float): gravitational constant
+            dt (float): time step
+            iterationNo (int): number of iterations
+
+        Returns:
+            Simulation: outer solar system simulation
+        """
+        
         planets = [
             self.__sun,
             self.__mercury,

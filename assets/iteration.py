@@ -4,6 +4,15 @@ from objects.vector import VectorCalculation, VectorForm as Vec
 class Iteration():
     
     def __init__(self, bodies:list[Body], **kwargs):
+        """Create an iteration object
+
+        Args:
+            bodies (list[Body]): list of bodies
+        Kwargs:
+            dt (float): time step in seconds (default 86400)
+            G (float): gravitational constant (default 6.67e-11)
+        """
+
         self.__bodies = bodies
         self.__dt = kwargs.get("dt", 86400) #default: a day
         self.__G = kwargs.get('G', 6.67e-11)
@@ -18,6 +27,7 @@ class Iteration():
         Returns:
             Vec: new acceleration 
         """
+
         if bodyx is None:
             bodyx = body.x
         acc = []
