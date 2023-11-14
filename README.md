@@ -1,4 +1,6 @@
 # NEA-project
 # simple n-body gravity simulator
 
-#PS not yet completed
+Install required libraries:
+
+`pip install -r requirements.txt`

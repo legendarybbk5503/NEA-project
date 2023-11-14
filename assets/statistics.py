@@ -549,7 +549,7 @@ class Statistics:
                 self.__ax.set_title("Distance from Center Object at t = 0")
         return y_axis
 
-    def general(self, name: str, data_choice: int, direction: int, displacement_mode: int) -> tuple[matplotlib.Figure, matplotlib.Axes]:
+    def general(self, name: str, data_choice: int, direction: int, displacement_mode: int) -> tuple[matplotlib.figure, matplotlib.axes]:
         """Use the data to create fig, ax
 
         Args:
@@ -559,7 +559,7 @@ class Statistics:
             displacement_mode (int): index of the displacement mode
 
         Returns:
-            tuple[matplotlib.Figure, matplotlib.Axes]: matplotlib fig and ax for plotting graph
+            tuple[matplotlib.figure, matplotlib.axes]: matplotlib fig and ax for plotting graph
         """
 
         t = self.__get_t(name)
@@ -580,7 +580,7 @@ class Statistics:
 
         return self.__fig, self.__ax
 
-    def energy(self, name: str, energy_choice: int, G: float) -> tuple[matplotlib.Figure, matplotlib.Axes]:
+    def energy(self, name: str, energy_choice: int, G: float) -> tuple[matplotlib.figure, matplotlib.axes]:
         """Use the data to create fig, ax
 
         Args:
@@ -589,7 +589,7 @@ class Statistics:
             G (float): gravitational constant
 
         Returns:
-            tuple[matplotlib.Figure, matplotlib.Axes]: matplotlib fig and ax for plotting graph
+            tuple[matplotlib.figure, matplotlib.axes]: matplotlib fig and ax for plotting graph
         """
 
         mass = self.__db[name].mass
