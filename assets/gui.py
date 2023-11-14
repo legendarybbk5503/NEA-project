@@ -128,7 +128,7 @@ class GUI():
         pygame.draw.circle(self.__screen, color, center, self.__circle_radius)
         return center
 
-    def __draw(self, db: DatabaseDict, iterationNo: int):
+    def __draw(self, db: DatabaseDict, iterationNo: float):
         """Create the drawing screen and draw the simulation on the screen
         with the choice of play again and statistics
 
