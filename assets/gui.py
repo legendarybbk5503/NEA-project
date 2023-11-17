@@ -202,7 +202,7 @@ class GUI():
                 elif self.__isPlay_again(event):
                     self.__draw(db, iterationNo)
                 elif self.__isStatistics(event):
-                    self.__statistics(db, iterationNo)
+                    self.__statistics(db)
         
     def __statistics(self, db: DatabaseDict):
         """Create the statistics screen and let user pick between different statistics
