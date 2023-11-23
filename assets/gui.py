@@ -27,6 +27,7 @@ class GUI():
         self.__circle_radius = 7
         
         self.__previous_vars = {}
+        self.__previous_vars["displacement_mode"] = None
 
         clock = pygame.time.Clock()
         clock.tick(60)
