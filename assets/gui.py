@@ -29,6 +29,9 @@ class GUI():
         self.__previous_vars = {}
         self.__previous_vars["displacement_mode"] = None
 
+        self.__paused = False
+        self.__speed = 1
+
         clock = pygame.time.Clock()
         clock.tick(60)
 
@@ -55,8 +58,8 @@ class GUI():
         max_x, min_x = max(x), min(x)
         max_y, min_y = max(y), min(y)
 
-        sf_x = (self.__width - 100) / (max_x - min_x)
-        sf_y = (self.__height - 100) / (max_y - min_y)
+        sf_x = (self.__width - 150) / (max_x - min_x)
+        sf_y = (self.__height - 150) / (max_y - min_y)
 
         scale_factor = min(sf_x, sf_y)
         return scale_factor, min_x, min_y
@@ -75,8 +78,8 @@ class GUI():
             tuple[int, int]: x, y in pygame coordinate
         """
 
-        scaled_x = int(((x - min_x) * scale_factor)) + 50
-        scaled_y = int(((y - min_y) * scale_factor)) + 50
+        scaled_x = int(((x - min_x) * scale_factor)) + 75
+        scaled_y = int(((y - min_y) * scale_factor)) + 75
         return scaled_x, scaled_y
 
     def __format_time(self, seconds: float) -> str:
@@ -129,6 +132,50 @@ class GUI():
         pygame.draw.circle(self.__screen, color, center, self.__circle_radius)
         return center
 
+    def __draw_check_buttons(self, db: DatabaseDict, iterationNo: float):
+        """Check all buttons in draw
+
+        Args:
+            db (DatabaseDict): database
+            iterationNo (float): number of iterations
+        """
+
+        for event in pygame.event.get():
+            if self.__isExit(event):
+                self.__exit()
+            elif self.__isHome(event):
+                self.__home()
+            elif self.__isBack(event):
+                simulation_choice = self.__previous_vars["simulation_choice"]
+                self.__simulation_run(simulation_choice)
+            elif self.__isPlay_again(event):
+                self.__draw(db, iterationNo)
+            elif self.__isStatistics(event):
+                self.__statistics(db)
+            elif self.__isPause(event):
+                self.__draw_pause(db, iterationNo)
+            elif self.__isSpeedUp(event):
+                self.__draw_speedup()
+            elif self.__isSlowDown(event):
+                self.__draw_slowdown()
+    
+    def __draw_pause(self, db, iterationNo):
+        self.__paused = not self.__paused
+        while self.__paused is True: #pause
+            self.__draw_check_buttons(db, iterationNo)
+    
+    def __draw_speedup(self):
+        l = [0.1, 0.2, 0.5, 1, 2, 5]
+        if self.__speed != 5:
+            self.__speed = l[(l.index(self.__speed) + 1) % len(l)]
+        self.__buttons.speed._text = f"Speed: {str(self.__speed)}x"
+
+    def __draw_slowdown(self):
+        l = [0.1, 0.2, 0.5, 1, 2, 5]
+        if self.__speed != 0.1:
+            self.__speed = l[(l.index(self.__speed) - 1) % len(l)]
+        self.__buttons.speed._text = f"Speed: {str(self.__speed)}x"        
+
     def __draw(self, db: DatabaseDict, iterationNo: float):
         """Create the drawing screen and draw the simulation on the screen
         with the choice of play again and statistics
@@ -154,6 +201,10 @@ class GUI():
             self.__buttons.back_button.draw(self.__screen)
             self.__buttons.play_again.draw(self.__screen)
             self.__buttons.statistics.draw(self.__screen)
+            self.__buttons.speed.draw(self.__screen)
+            self.__buttons.pause.draw(self.__screen)
+            self.__buttons.speedup.draw(self.__screen)
+            self.__buttons.slowdown.draw(self.__screen)
 
             #show time
             time = next(iter(db.db.values())).t[i]
@@ -175,35 +226,14 @@ class GUI():
                             now = centers[j]
                             pygame.draw.line(self.__screen, color, previous, now, 2)
 
-            pygame.display.flip()
-            pygame.time.wait(5)            
+            pygame.display.flip()           
 
-            for event in pygame.event.get():
-                if self.__isExit(event):
-                    self.__exit()
-                elif self.__isHome(event):
-                    self.__home()
-                elif self.__isBack(event):
-                    simulation_choice = self.__previous_vars["simulation_choice"]
-                    self.__simulation_run(simulation_choice)
-                elif self.__isPlay_again(event):
-                    self.__draw(db, iterationNo)
-                elif self.__isStatistics(event):
-                    self.__statistics(db)
-        
+            self.__draw_check_buttons(db, iterationNo)
+
+            pygame.time.wait(int(10/self.__speed))
+
         while True:
-            for event in pygame.event.get():
-                if self.__isExit(event):
-                    self.__exit()
-                elif self.__isHome(event):
-                    self.__home()
-                elif self.__isBack(event):
-                    simulation_choice = self.__previous_vars["simulation_choice"]
-                    self.__simulation_run(simulation_choice)
-                elif self.__isPlay_again(event):
-                    self.__draw(db, iterationNo)
-                elif self.__isStatistics(event):
-                    self.__statistics(db)
+            self.__draw_check_buttons(db, iterationNo)
         
     def __statistics(self, db: DatabaseDict):
         """Create the statistics screen and let user pick between different statistics
@@ -522,6 +552,30 @@ class GUI():
         button = self.__buttons.play_again
         button.isHover(self.__screen)
         return button.isCollide(event)
+    
+    def __isPause(self, event: pygame.event) -> bool:
+        """Check if the pause button is clicked
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            bool: True if the back button is clicked
+        """
+
+        button = self.__buttons.pause
+        button.isHover(self.__screen)
+        return button.isCollide(event)
+    
+    def __isSpeedUp(self, event: pygame.event) -> bool:
+        button = self.__buttons.speedup
+        button.isHover(self.__screen)
+        return button.isCollide(event)
+
+    def __isSlowDown(self, event: pygame.event) -> bool:
+        button = self.__buttons.slowdown
+        button.isHover(self.__screen)
+        return button.isCollide(event)
 
     def __isStatistics(self, event: pygame.event) -> bool:
         """Check if the statistics button is clicked
@@ -765,7 +819,6 @@ class GUI():
         
         self.__stats = Statistics(db.db)
         self.__draw(db, values[2])
-
 
     def __home(self):
         """Back to home screen

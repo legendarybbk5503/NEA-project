@@ -382,12 +382,88 @@ class Button_init():
         button_width = 300
         button_height = 50
         return Button(
-            self.__center_x - button_width - 50,
+            self.__center_x - button_width - 75,
             self.__height - button_height,
             button_width,
             button_height,
             "white",
             "Play Again",
+            "red"
+        )
+    
+    def __pause(self) -> Button:
+        """Initialising pause button
+
+        Returns:
+            Button: pause button
+        """
+
+        button_width = 300
+        button_height = 50
+        return Button(
+            self.__center_x - button_width - 75,
+            self.__height - button_height * 2 - 10,
+            button_width,
+            button_height,
+            "white",
+            "Pause",
+            "red"
+        )
+
+    def __speed(self) -> Button:
+        """Initialising speed button
+
+        Returns:
+            Button: speed button
+        """
+
+        button_width = 300
+        button_height = 50
+        return Button(
+            self.__center_x -25,
+            self.__height - button_height * 2 - 10,
+            button_width,
+            button_height,
+            "white",
+            "Speed: 1x",
+            "red"
+        )
+    
+    def __speedup(self) -> Button:
+        """Initialising speed up butto
+
+        Returns:
+            Button: speed up button
+        """
+
+        button_width = 150
+        button_height = 50
+        return Button(
+            self.__width - button_width,
+            self.__height - button_height * 2 - 10,
+            button_width,
+            button_height,
+            "white",
+            "Speed up",
+            "red"
+        )
+    
+    def __slowdown(self) -> Button:
+        """Initialising slow down button
+
+        Returns:
+            Button: slow down button
+        """
+
+        button_width = 150
+        button_height = 50
+        return Button(
+            self.__width - button_width,
+            self.__height - button_height,
+            button_width,
+            button_height,
+            "white",
+            "Slow down",
             "red"
         )
 
@@ -401,7 +477,7 @@ class Button_init():
         button_width = 300
         button_height = 50
         return Button(
-            self.__center_x + 50,
+            self.__center_x - 25,
             self.__height - button_height,
             button_width,
             button_height,
@@ -597,6 +673,10 @@ class Button_init():
         self.simulation_setting_enter_error = self.__simulation_setting_enter_error()
         self.simulation_time = self.__simulation_time()
         self.play_again = self.__play_again()
+        self.pause = self.__pause()
+        self.speed = self.__speed()
+        self.speedup = self.__speedup()
+        self.slowdown = self.__slowdown()
         self.statistics = self.__statistics()
         self.statistics_earthmoon = self.__statistics_earthmoon()
         self.statistics_solar = self.__statistics_solar()
