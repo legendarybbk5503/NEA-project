@@ -185,14 +185,14 @@ class Button_init():
             list[Button]: earth moon default buttons
         """
 
-        button_width = 350
+        button_width = 325
         button_height = 100
         height_space = 200
         texts = ["Default: 6.67e-11", "Default: 3600 (an hour)", "Default: 720 (about a month)"]
         y_list = [self.__center_y - 100 + height_space * i for i in [-1, 0, 1]]
         return [
             Button(
-                self.__center_x + 100,
+                self.__center_x + 150,
                 y,
                 button_width,
                 button_height,
@@ -210,14 +210,14 @@ class Button_init():
         Returns:
             list[Button]: inner solar system default buttons
         """
-        button_width = 350
+        button_width = 325
         button_height = 100
         height_space = 200
         texts = ["Default: 6.67e-11", "Default: 43200 (half a day)", "Default: 1500 (about 2 yrs)"]
         y_list = [self.__center_y - 100 + height_space * i for i in [-1, 0, 1]]
         return [
             Button(
-                self.__center_x + 100,
+                self.__center_x + 150,
                 y,
                 button_width,
                 button_height,
@@ -235,14 +235,14 @@ class Button_init():
         Returns:
             list[Button]: middle solar system default buttons
         """
-        button_width = 350
+        button_width = 325
         button_height = 100
         height_space = 200
         texts = ["Default: 6.67e-11", "Default: 432000 (5 days)", "Default: 2200 (about 30 yrs)"]
         y_list = [self.__center_y - 100 + height_space * i for i in [-1, 0, 1]]
         return [
             Button(
-                self.__center_x + 100,
+                self.__center_x + 150,
                 y,
                 button_width,
                 button_height,
@@ -260,14 +260,14 @@ class Button_init():
         Returns:
             list[Button]: outer solar system default buttons
         """
-        button_width = 350
+        button_width = 325
         button_height = 100
         height_space = 200
         texts = ["Default: 6.67e-11", "Default: 1728000 (20 days)", "Default: 4600 (about 250 yrs)"]
         y_list = [self.__center_y - 100 + height_space * i for i in [-1, 0, 1]]
         return [
             Button(
-                self.__center_x + 100,
+                self.__center_x + 150,
                 y,
                 button_width,
                 button_height,
@@ -758,14 +758,14 @@ class Textbox_init():
             list[Button]: textboxes in simulation setting
         """
 
-        textbox_width = 500
+        textbox_width = 600
         textbox_height = 100
         height_space = 200
-        texts = ["Gravitional Constant: ", "Time Step (s): ", "Number of Iterations: "]
+        texts = ["Gravitional Constant: ", "Time between each iteration / Time step (s): ", "Number of Iterations: "]
         y_list = [self.__center_y - 100 + height_space * i for i in [-1, 0, 1]]
         return [
             Textbox(
-            50,
+            25,
             y,
             textbox_width,
             textbox_height,

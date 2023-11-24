@@ -161,6 +161,11 @@ class GUI():
     
     def __draw_pause(self, db, iterationNo):
         self.__paused = not self.__paused
+        button = self.__buttons.pause
+        button._text = "Pause" if self.__paused is False else "Resume"
+        button.draw(self.__screen)
+        pygame.display.update(button._rect)
+
         while self.__paused is True: #pause
             self.__draw_check_buttons(db, iterationNo)
     
@@ -168,13 +173,20 @@ class GUI():
         l = [0.1, 0.2, 0.5, 1, 2, 5]
         if self.__speed != 5:
             self.__speed = l[(l.index(self.__speed) + 1) % len(l)]
-        self.__buttons.speed._text = f"Speed: {str(self.__speed)}x"
+        button = self.__buttons.speed
+        button._text = f"Speed: {str(self.__speed)}x"
+        button.draw(self.__screen)
+        pygame.display.update(button._rect)
 
     def __draw_slowdown(self):
         l = [0.1, 0.2, 0.5, 1, 2, 5]
         if self.__speed != 0.1:
             self.__speed = l[(l.index(self.__speed) - 1) % len(l)]
-        self.__buttons.speed._text = f"Speed: {str(self.__speed)}x"        
+        button = self.__buttons.speed
+        button._text = f"Speed: {str(self.__speed)}x"
+        button.draw(self.__screen)
+        pygame.display.update(button._rect)
+        
 
     def __draw(self, db: DatabaseDict, iterationNo: float):
         """Create the drawing screen and draw the simulation on the screen
