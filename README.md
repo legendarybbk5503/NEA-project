@@ -1,5 +1,5 @@
 # NEA-project
-# simple n-body gravity simulator
+# Simple N-body Gravity Simulator
 
 Install required libraries:
 
