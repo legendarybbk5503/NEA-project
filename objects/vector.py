@@ -41,7 +41,7 @@ class VectorForm():
         return len(self.__vector)
 
 class VectorCalculation():
-    """Includeds different vector calculation
+    """Includes different vector calculation
     """
     
     def sum(self, *args: VectorForm) -> VectorForm:
@@ -54,9 +54,8 @@ class VectorCalculation():
         args = list(map(lambda x: x.print(), args))
         return VectorForm(*list(map(sum, zip(*args))))
     
-    #vector difference a-b
     def difference(self, a: VectorForm, b: VectorForm) -> VectorForm:
-        """Calculate the difference of vectors
+        """Calculate the difference of vectors (a-b)
 
         Args:
             a (VectorForm): first vector
