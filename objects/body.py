@@ -1,8 +1,8 @@
 from objects.vector import VectorForm as Vec
-
+from pygame import Color
 class Body():
     
-    def __init__(self, name: str, mass: float, color: str):
+    def __init__(self, name: str, mass: float, color: Color):
         """init a body
 
         Args:
@@ -27,7 +27,7 @@ class Body():
         self.oldt = None
 
     def xva(self, x: Vec, v: Vec, a: Vec = Vec(0, 0)):
-        """append xva data
+        """update xva data
 
         Args:
             x (Vec): _description_
