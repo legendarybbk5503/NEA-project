@@ -3,7 +3,7 @@ class VectorForm():
     """
     def __init__(self, *args):
         """Create a math vector form
-        *Args(int):
+        *Args(float):
             values of the vector
         """
         self.__vector = list(args)
