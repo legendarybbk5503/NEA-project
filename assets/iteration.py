@@ -39,7 +39,6 @@ class Iteration():
                 acc.append(a)
         return VectorCalculation().sum(*acc)
 
-    #leapfrogDKD method
     def leapfrogDKD(self, body: Body) -> tuple:
         """leapfrog drift-kick-drift method
 
