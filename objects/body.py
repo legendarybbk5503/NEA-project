@@ -8,7 +8,7 @@ class Body():
         Args:
             name (str): name of the object
             mass (float): mass of the object
-            color (str): color of the object
+            color (Color): color of the object
         """
         self.name = name
         self.mass = mass
