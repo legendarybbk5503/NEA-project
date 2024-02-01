@@ -1,5 +1,6 @@
 from objects.vector import VectorForm as Vec
 from pygame import Color
+
 class Body():
     
     def __init__(self, name: str, mass: float, color: Color):
