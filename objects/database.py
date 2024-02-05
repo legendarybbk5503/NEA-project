@@ -64,11 +64,11 @@ class DatabaseDict():
             body.a
         ) for body in bodies}
     
-    def appendxva(self, name, t: int, x: Vec, v: Vec, a: Vec):
+    def appendxva(self, name: str, t: int, x: Vec, v: Vec, a: Vec):
         """Append datas under the object
 
         Args:
-            name (_type_): name of the body
+            name (str): name of the body
             t (int): time
             x (Vec): displacement
             v (Vec): velocity
