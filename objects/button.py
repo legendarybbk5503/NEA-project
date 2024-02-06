@@ -73,6 +73,56 @@ class Button():
             return self._rect.collidepoint(event.pos)
         return False
 
+class Textbox(Button):
+    def __init__(self, x: int, y: int, width: int, height: int, color: Color, text: str, text_color: Color):
+        """Create a textbox object
+        Parent class: Button
+
+        Args:
+            x (int): x position
+            y (int): y position
+            width (int): width of the textbox
+            height (int): height of the textbox
+            color (Color): color of the background 
+            text (str): text on the textbox
+            text_color (Color): color of the text
+        """
+
+        self.__orignal_text = text
+        self.value = ""
+        super().__init__(x, y, width, height, color, text, text_color)
+    
+    def isExit_textbox(self, event: pygame.event) -> bool:
+        """Check if the user has left the textbox
+
+        Args:
+            event (pygame.event): pygame event
+
+        Returns:
+            bool: True if the user has left else False
+        """
+
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            return not self._rect.collidepoint(event.pos)
+
+    def typing(self, event: pygame.event, screen: pygame.Surface):
+        """Add or erase characters from textbox like typing
+
+        Args:
+            event (pygame.event): pygame event, to check if the user is typing
+            screen (pygame.Surface): pygame screen, to add the updated textbox
+        """
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                if len(self.value) > 0:
+                    self.value = self.value[:-1]
+            else:
+                self.value += event.unicode
+            self._text = self.__orignal_text + self.value
+            super().draw(screen)
+            pygame.display.update(self._rect)
+
 class Button_init():
     def __init__(self, width: int, height: int):
         """Initialising all buttons
@@ -684,56 +734,6 @@ class Button_init():
         self.statistics_energy = self.__statistics_energy()
         self.statistics_displacement = self.__statistics_displacement()
         self.statistics_general = self.__statistics_general()
-
-class Textbox(Button):
-    def __init__(self, x: int, y: int, width: int, height: int, color: Color, text: str, text_color: Color):
-        """Create a textbox object
-        Parent class: Button
-
-        Args:
-            x (int): x position
-            y (int): y position
-            width (int): width of the textbox
-            height (int): height of the textbox
-            color (Color): color of the background 
-            text (str): text on the textbox
-            text_color (Color): color of the text
-        """
-
-        self.__orignal_text = text
-        self.value = ""
-        super().__init__(x, y, width, height, color, text, text_color)
-    
-    def isExit_textbox(self, event: pygame.event) -> bool:
-        """Check if the user has left the textbox
-
-        Args:
-            event (pygame.event): pygame event
-
-        Returns:
-            bool: True if the user has left else False
-        """
-
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            return not self._rect.collidepoint(event.pos)
-
-    def typing(self, event: pygame.event, screen: pygame.Surface):
-        """Add or erase characters from textbox like typing
-
-        Args:
-            event (pygame.event): pygame event, to check if the user is typing
-            screen (pygame.Surface): pygame screen, to add the updated textbox
-        """
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                if len(self.value) > 0:
-                    self.value = self.value[:-1]
-            else:
-                self.value += event.unicode
-            self._text = self.__orignal_text + self.value
-            super().draw(screen)
-            pygame.display.update(self._rect)
 
 class Textbox_init():
     def __init__(self, width: int, height: int):
