@@ -457,8 +457,6 @@ class GUI():
                     else:
                         displacement_mode = self.__previous_vars["displacement_mode"]
                         self.__statistics_general(name, data_choice, displacement_mode)
-                    
-
 
     def __clear(self):
         """Clear pygame screen
