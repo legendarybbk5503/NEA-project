@@ -187,7 +187,6 @@ class GUI():
         button.draw(self.__screen)
         pygame.display.update(button._rect)
         
-
     def __draw(self, db: DatabaseDict, iterationNo: float):
         """Create the drawing screen and draw the simulation on the screen
         with the choice of play again and statistics
