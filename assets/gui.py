@@ -159,7 +159,7 @@ class GUI():
             elif self.__isSlowDown(event):
                 self.__draw_slowdown()
     
-    def __draw_pause(self, db, iterationNo):
+    def __draw_pause(self, db: DatabaseDict, iterationNo: float):
         self.__paused = not self.__paused
         button = self.__buttons.pause
         button._text = "Pause" if self.__paused is False else "Resume"

@@ -2,17 +2,17 @@ import pygame
 from pygame import Color
 
 class Button():
-    def __init__(self, x, y, width, height, color, text, text_color):
+    def __init__(self, x: int, y: int, width: int, height: int, color: Color, text: str, text_color: Color):
         """Create a button object
 
         Args:
-            x (_type_): x position
-            y (_type_): y position
-            width (_type_): width of the button
-            height (_type_): height of the button
-            color (_type_): color of the background
-            text (_type_): text on the button
-            text_color (_type_): color of the text
+            x (int): x position
+            y (int): y position
+            width (int): width of the button
+            height (int): height of the button
+            color (Color): color of the background
+            text (str): text on the button
+            text_color (Color): color of the text
         """
 
         self._rect = pygame.Rect(x, y, width, height)
