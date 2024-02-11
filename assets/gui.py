@@ -92,11 +92,11 @@ class GUI():
             str: human readable approximate form of time
         """
 
-        years = seconds // (365 * 24 * 3600)
-        days = (seconds // (24 * 3600)) % 365
-        hours = (seconds // 3600) % 24
-        minutes = (seconds // 60) % 60
-        remaining_seconds = seconds % 60
+        years = int(seconds // (365.24 * 24 * 3600))
+        days = int((seconds // (24 * 3600)) % 365.24)
+        hours = int((seconds // 3600) % 24)
+        minutes = int((seconds // 60) % 60)
+        remaining_seconds = int(seconds % 60)
 
         if years > 0:
             if years == 1: return f"1 yr, {days} days"
@@ -468,7 +468,7 @@ class GUI():
         """Check if the exit button is clicked
 
         Args:
-            event (_type_): pygame event
+            event (pygame.event): pygame event
 
         Returns:
             bool: True if the exit button is clicked else False
